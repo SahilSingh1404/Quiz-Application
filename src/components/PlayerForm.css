@@ -1,0 +1,96 @@
+.player-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  font-family: "Poppins", sans-serif;
+}
+
+.player-form-card {
+  background: white;
+  padding: 40px 50px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 350px;
+  animation: fadeInUp 0.5s ease-in-out;
+}
+
+.quiz-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2a5298;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #555;
+  margin-bottom: 25px;
+  font-size: 1rem;
+}
+
+.player-input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 2px solid #d1d5db;
+  border-radius: 10px;
+  outline: none;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.player-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.4);
+}
+
+.error-msg {
+  color: #dc2626;
+  font-weight: 600;
+  margin: 8px 0 15px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.start-btn {
+  width: 100%;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.start-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.start-btn:active {
+  transform: scale(0.98);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
