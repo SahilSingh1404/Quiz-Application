@@ -1,149 +1,114 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import socket from "../socket";
 import "./Quiz.css";
 
-const questions = [
-  {
-    question: "PCA is primarily used for which purpose in data analysis?",
-    options: [
-      "Feature reduction",
-      "Model evaluation",
-      "Data labeling",
-      "Feature scaling"
-    ],
-    answer: "Feature reduction",
-  },
-  {
-    question: "Which process updates neural network weights to minimize the loss function?",
-    options: [
-      "Optimization",
-      "Regularization",
-      "Activation",
-      "Normalization"
-    ],
-    answer: "Optimization",
-  },
-];
-
-
-export default function Quiz() {
-  const navigate = useNavigate();
-  const [current, setCurrent] = useState(0);
+export default function Quiz({ questions, currentQ, playerName, roomId }) {
   const [selected, setSelected] = useState("");
   const [timer, setTimer] = useState(15);
+  const [disableButtons, setDisableButtons] = useState(false);
+  const [waiting, setWaiting] = useState(false);
 
-  const player1 = localStorage.getItem("player1");
-  const player2 = localStorage.getItem("player2");
-//   const scores = JSON.parse(localStorage.getItem("scores"));
-  const turn = localStorage.getItem("turn");
-
-  const currentPlayer = turn === "p1" ? player1 : player2;
-  const [errorMsg, setErrorMsg] = useState("");
-
-
-useEffect(() => {
-  if (timer <= 0) {
-    handleSubmit(true); 
-    return;
-  }
+  useEffect(() => {
+  setSelected("");
+  setTimer(15);
+  setDisableButtons(false);
+  setWaiting(false);
 
   const interval = setInterval(() => {
-    setTimer(t => parseFloat((t - 0.2).toFixed(1)));
-  }, 200);
+    setTimer((t) => {
+      if (t <= 1) {
+        clearInterval(interval);
+        // ALWAYS submit something, even if nothing selected
+        if (!disableButtons) {
+          setDisableButtons(true);
+          setWaiting(true);
+          socket.emit("submitAnswer", {
+            roomId,
+            playerName,
+            answer: selected || "No Answer",
+            timeTaken: 15,
+          });
+        }
+        return 0;
+      }
+      return t - 1;
+    });
+  }, 1000);
 
   return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [timer]); 
+}, [currentQ]);
 
-  const handleSubmit = (auto = false) => {
-  const stored = JSON.parse(localStorage.getItem("scores")) || { p1: 0, p2: 0 };
-  const newScores = { ...stored };
-
-  if (auto) {
-    if (current + 1 < questions.length) {
-      setCurrent(current + 1);
-      setSelected("");
-      setErrorMsg("");
-      setTimer(15);
-    } else if (turn === "p1") {
-      localStorage.setItem("turn", "p2");
-      setCurrent(0);
-      setSelected("");
-      setErrorMsg("");
-      setTimer(15);
-    } else {
-      navigate("/result");
+  const handleTimeoutSubmit = () => {
+    if (!disableButtons) {
+      setDisableButtons(true);
+      setWaiting(true);
+      socket.emit("submitAnswer", {
+        roomId,
+        playerName,
+        answer: "No Answer",
+        timeTaken: 15,
+      });
     }
-    return;
-  }
+  };
 
-  // Manual submission case
-  if (!selected) {
-    setErrorMsg("⚠️ Please select an option before submitting!");
-    setTimeout(() => setErrorMsg(""), 2000);
-    return;
-  }
+  const handleSubmit = () => {
+    if (!selected) return alert("Select an answer before submitting");
+    setDisableButtons(true);
+    setWaiting(true);
+    socket.emit("submitAnswer", {
+      roomId,
+      playerName,
+      answer: selected,
+      timeTaken: 15 - timer,
+    });
+  };
 
-  if (selected === questions[current].answer) {
-    newScores[turn] = (newScores[turn] || 0) + 1;
-  }
+  const q = questions[currentQ];
+  if (!q) return <p className="quiz-status">Loading question...</p>;
 
-  localStorage.setItem("scores", JSON.stringify(newScores));
-
-  if (current + 1 < questions.length) {
-    setCurrent(current + 1);
-    setSelected("");
-    setErrorMsg("");
-    setTimer(15);
-  } else if (turn === "p1") {
-    localStorage.setItem("turn", "p2");
-    setCurrent(0);
-    setSelected("");
-    setErrorMsg("");
-    setTimer(15);
-  } else {
-    navigate("/result");
-  }
-};
-
-
-  const timerWidth = `${(timer / 15) * 100}%`;
+  const progressPercentage = (timer / 15) * 100;
 
   return (
     <div className="quiz-container">
-      <div className="quiz-card relative">
-        <div className="top-bar">
-          <div className="player-name">{currentPlayer}'s Turn</div>
-          <div className="question-badge">
-            Question {current + 1} / {questions.length}
-          </div>
-        </div>
-
-        <div className="timer-bar-container">
-          <div className="timer-bar" style={{ width: timerWidth }}></div>
-        </div>
-
-        <div className="question-text">{questions[current].question}</div>
-
-        <div className="options-container">
-          {questions[current].options.map(opt => (
+      <div className="quiz-card">
+        <h2 className="quiz-title">
+          Question {currentQ + 1} of {questions.length}
+        </h2>
+        <p className="quiz-question">{q.question}</p>
+        <div className="quiz-options">
+          {q.options.map((opt, i) => (
             <button
-              key={opt}
-              className={`option-button ${selected === opt ? "option-selected" : ""}`}
+              key={i}
+              disabled={disableButtons}
               onClick={() => setSelected(opt)}
+              className={`quiz-option ${selected === opt ? "selected" : ""}`}
             >
               {opt}
             </button>
           ))}
         </div>
 
-        <button
-  className="submit-button"
-  onClick={() => handleSubmit(false)} 
->
-  Submit
-</button>
+        <div className="quiz-timer-bar">
+          <div
+            className="quiz-timer-progress"
+            style={{ width: `${progressPercentage}%` }}
+          ></div>
+        </div>
+        <p className="quiz-timer-text">⏱ {timer}s</p>
 
+        <button
+          onClick={handleSubmit}
+          disabled={disableButtons}
+          className={`quiz-submit ${disableButtons ? "disabled" : ""}`}
+        >
+          Submit
+        </button>
+
+        {waiting && (
+          <p className="quiz-waiting">
+            ✅ Waiting for the other player to submit...
+          </p>
+        )}
       </div>
     </div>
   );

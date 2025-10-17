@@ -1,96 +1,91 @@
-.player-form-container {
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #f0f2f5; 
+  font-family: 'Poppins', sans-serif;
+}
+
+.playerform-container {
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
-  font-family: "Poppins", sans-serif;
+  padding: 20px;
 }
 
-.player-form-card {
-  background: white;
-  padding: 40px 50px;
+.playerform-card {
+  background: #1f2937; 
+  padding: 40px 30px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  width: 350px;
-  animation: fadeInUp 0.5s ease-in-out;
-}
-
-.quiz-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #2a5298;
-  margin-bottom: 10px;
-}
-
-.subtitle {
-  color: #555;
-  margin-bottom: 25px;
-  font-size: 1rem;
-}
-
-.player-input {
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
   width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border: 2px solid #d1d5db;
+  max-width: 400px;
+  text-align: center;
+  color: #f9fafb;
+  box-sizing: border-box; 
+}
+
+.playerform-title {
+  font-size: 2rem;
+  margin-bottom: 30px;
+}
+
+.playerform-input {
+  width: 100%;
+  max-width: 100%;  
+  padding: 12px 15px;
+  margin-bottom: 15px;
   border-radius: 10px;
-  outline: none;
+  border: 1px solid #374151;
   font-size: 1rem;
+  background: #374151;
+  color: #f9fafb;
+  box-sizing: border-box; 
+}
+
+.playerform-input::placeholder {
+  color: #d1d5db;
+}
+
+.playerform-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.playerform-btn {
+  flex: 1;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
   transition: all 0.3s ease;
 }
 
-.player-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 6px rgba(37, 99, 235, 0.4);
-}
-
-.error-msg {
-  color: #dc2626;
-  font-weight: 600;
-  margin: 8px 0 15px;
-  animation: fadeIn 0.3s ease-in;
-}
-
-.start-btn {
-  width: 100%;
-  background: #2563eb;
+.playerform-btn.create {
+  background-color: #3b82f6; 
   color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.start-btn:hover {
-  background: #1d4ed8;
-  transform: translateY(-2px);
+.playerform-btn.create:hover {
+  background-color: #2563eb;
 }
 
-.start-btn:active {
-  transform: scale(0.98);
+.playerform-btn.join {
+  background-color: #10b981;
+  color: white;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.playerform-btn.join:hover {
+  background-color: #059669;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.playerform-status {
+  margin-top: 20px;
+  font-weight: 500;
+  color: #fbbf24;
 }
